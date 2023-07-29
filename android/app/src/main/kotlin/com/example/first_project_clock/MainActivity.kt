@@ -22,30 +22,6 @@ class MainActivity : FlutterActivity() {
     private val eventChannel = "com.example.timer_app/event_channel/timer"
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
-//        super.configureFlutterEngine(flutterEngine)
-//        MethodChannel(
-//            flutterEngine.dartExecutor.binaryMessenger,
-//            CHANNEL
-//        ).setMethodCallHandler { call, result ->
-//            if (call.method == "startTimer") {
-//                val timerFlow: Flow<String?> = startTimer()
-//                CoroutineScope(Dispatchers.Main).launch {
-//                    timerFlow.collect { state ->
-//                        Log.e("onTick: ", state.toString())
-//                        if (state != null) {
-//                            result.success(state)
-//                        } else {
-//                            result.error("Timer is Null", "Timer is Null", null)
-//                        }
-//                    }
-//                }
-//
-//            } else {
-//                result.notImplemented()
-//            }
-//
-//        }
-
         super.configureFlutterEngine(flutterEngine)
         EventChannel(flutterEngine.dartExecutor.binaryMessenger, eventChannel).setStreamHandler(
             CounterHandler
