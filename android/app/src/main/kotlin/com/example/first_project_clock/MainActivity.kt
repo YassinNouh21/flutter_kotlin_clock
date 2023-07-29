@@ -9,7 +9,9 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
@@ -43,7 +45,7 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private fun startTimer(): Flow<String?> = flow {
+    private fun startTimer(): Flow<String?> = channelFlow  {
         var state: String? = null
         val timer = object : CountDownTimer(20000, 1000) {
             override fun onTick(p0: Long) {
@@ -55,10 +57,14 @@ class MainActivity : FlutterActivity() {
                 state = "Done"
                 // Emit the state once the timer finishes
                 lifecycleScope.launch {
-                    emit(state)
+                   send(state)
+                    close() 
                 }
+
             }
         }
         timer.start()
+        awaitClose{ timer.cancel() }
+
     }
 }
