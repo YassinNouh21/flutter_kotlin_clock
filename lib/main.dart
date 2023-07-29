@@ -30,8 +30,14 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  static const platform = MethodChannel('com.example.timer_app/timer');
-  String result = "Timer is not Started yet";
+  String eventChannelName = "com.example.timer_app/event_channel/timer";
+  static EventChannel? eventChannel;
+
+  @override
+  void initState() {
+    eventChannel = EventChannel(eventChannelName);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,27 +47,21 @@ class _HomeState extends State<Home> {
         child: Column(
           children: [
             ElevatedButton(
-              onPressed: _startTimer,
+              onPressed: (){},
               child: const Text("Start Timer"),
             ),
-            Text(result),
+            StreamBuilder<String>(
+                stream: eventChannel?.receiveBroadcastStream().cast<String>(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Text(snapshot.data!);
+                  }
+                  return const Text('no data present');
+                }),
           ],
         ),
       ),
     );
   }
 
-  Future<void> _startTimer() async {
-    String? state;
-    try {
-      state = await platform.invokeMethod('startTimer');
-
-      print(state);
-    } on PlatformException catch (e) {
-      print(e.message);
-    }
-    setState(() {
-      result = state ?? "returned is null";
-    });
-  }
 }
