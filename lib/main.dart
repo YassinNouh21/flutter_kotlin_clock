@@ -30,12 +30,13 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  String eventChannelName = "com.example.timer_app/event_channel/timer";
-  static EventChannel? eventChannel;
+  String methodChannelName = "com.example.timer_app/method_channel/timer";
+  // String eventChannelName = "com.example.timer_app/event_channel/timer";
+  // static EventChannel? eventChannel;
 
   @override
   void initState() {
-    eventChannel = EventChannel(eventChannelName);
+    // eventChannel = EventChannel(eventChannelName);
     super.initState();
   }
 
@@ -47,21 +48,32 @@ class _HomeState extends State<Home> {
         child: Column(
           children: [
             ElevatedButton(
-              onPressed: (){},
+              onPressed: _startTimer,
               child: const Text("Start Timer"),
             ),
-            StreamBuilder<String>(
-                stream: eventChannel?.receiveBroadcastStream().cast<String>(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Text(snapshot.data!);
-                  }
-                  return const Text('no data present');
-                }),
+            // StreamBuilder<String>(
+            //     stream: eventChannel?.receiveBroadcastStream().cast<String>(),
+            //     builder: (context, snapshot) {
+            //       if (snapshot.hasData) {
+            //         return Text(snapshot.data!);
+            //       }
+            //       return const Text('no data present');
+            //     }),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _startTimer() async {
+    try{
+      debugPrint('onpressed: start timer');
+      MethodChannel methodChannel = MethodChannel(methodChannelName);
+      await methodChannel.invokeMethod("startTimer");
+      debugPrint('onpressed: finished successfully');
+    }on PlatformException catch(e){
+      debugPrint(e.message);
+    }
   }
 
 }
